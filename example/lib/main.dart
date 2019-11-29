@@ -1,5 +1,11 @@
+import 'package:example/api_exposer.dart';
+import 'package:example/dialog_utils.dart';
+import 'package:example/linkedin_share_request.dart' as prefix0;
+import 'package:example/linkedin_share_request.dart';
 import 'package:flutter/material.dart';
 import 'package:linkedin_login/linkedin_login.dart';
+
+import 'loader.dart';
 
 void main() => runApp(MyApp());
 
@@ -7,9 +13,9 @@ void main() => runApp(MyApp());
 // You need to add your own data from LinkedIn application
 // From: https://www.linkedin.com/developers/
 // Please read step 1 from this link https://developer.linkedin.com/docs/oauth2
-final String redirectUrl = 'https://app.carde.de';
-final String clientId = '776rnw4e4izlvg';
-final String clientSecret = 'rQEgboUHMLcQi59v';
+final String redirectUrl = 'https://intro.ooo';
+final String clientId = '81jmy8b0ul2415';
+final String clientSecret = 'Rhr25MKWs2eRByCq';
 
 class MyApp extends StatelessWidget {
   // This widget is the root of your application.
@@ -56,6 +62,9 @@ class _LinkedInProfileExamplePageState
     extends State<LinkedInProfileExamplePage> {
   UserObject user;
   bool logoutUser = false;
+  bool visibility = false;
+  DialogUtils _dialogUtils;
+  Loader _loader;
 
   @override
   Widget build(BuildContext context) {
@@ -88,9 +97,12 @@ class _LinkedInProfileExamplePageState
                           lastName: linkedInUser.lastName.localized.label,
                           email: linkedInUser
                               .email.elements[0].handleDeep.emailAddress,
+                          accessToken: linkedInUser.token.accessToken,
+                          id: linkedInUser.userId,
                         );
                         setState(() {
                           logoutUser = false;
+                          visibility = true;
                         });
 
                         Navigator.pop(context);
@@ -123,11 +135,74 @@ class _LinkedInProfileExamplePageState
                   Text('First: ${user?.firstName} '),
                   Text('Last: ${user?.lastName} '),
                   Text('Email: ${user?.email}'),
+                  Visibility(
+                      visible: visibility,
+                      child: Container(
+                        margin: EdgeInsets.symmetric(vertical: 16.0),
+                        child: MaterialButton(
+                          onPressed: () {
+                            _postShare();
+                          },
+                          height: 52,
+                          color: Colors.red,
+                          child: Text(
+                            'Post Share',
+                            style: TextStyle(color: Colors.white),
+                          ),
+                        ),
+                      )),
                 ],
               ),
             ),
           ]),
     );
+  }
+
+  _postShare() {
+    _loader.show(Colors.red);
+    var id = user.id;
+    var dateTime = DateTime.now();
+    List<prefix0.ContentEntity> contentEntites = [];
+    List<prefix0.Thumbnail> thumbnails = [];
+    thumbnails.add(prefix0.Thumbnail(
+        resolvedUrl: 'https://via.placeholder.com/300x300.png'));
+    contentEntites.add(ContentEntity(
+        entityLocation:
+            'https://via.placeholder.com/300x300.png?text=$dateTime',
+        thumbnails: thumbnails));
+
+    var body = prefix0.LinkedinShareRequest(
+        content: prefix0.Content(
+            contentEntities: contentEntites, title: 'Harley davidson'),
+        owner: 'urn:li:person:$id',
+        subject: 'Bike',
+        distribution: prefix0.Distribution(
+            linkedInDistributionTarget: prefix0.LinkedInDistributionTarget()),
+        text: prefix0.ContentText(
+            text: 'A nice harley davidson with a cool background!'));
+
+    var apiExposer = ApiExposer();
+    apiExposer.callApi(
+        context: context,
+        authToken: user.accessToken,
+        body: body,
+        url: 'https://api.linkedin.com/v2/shares',
+        onSuccess: () {
+          _loader.hide();
+        },
+        onError: (String errorMessage) {
+          _loader.hide();
+        },
+        onAuthFailure: (String errorMessage) {
+          _loader.hide();
+        });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _dialogUtils = DialogUtils();
+    _loader = Loader(context: context, showBackgroundColor: false);
   }
 }
 
@@ -213,7 +288,8 @@ class AuthCodeObject {
 }
 
 class UserObject {
-  String firstName, lastName, email;
+  String firstName, lastName, email, accessToken, id;
 
-  UserObject({this.firstName, this.lastName, this.email});
+  UserObject(
+      {this.firstName, this.lastName, this.email, this.accessToken, this.id});
 }

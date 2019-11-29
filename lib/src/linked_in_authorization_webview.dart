@@ -64,7 +64,7 @@ class _LinkedInAuthorizationState extends State<LinkedInAuthorization> {
         '&client_id=${widget.clientId}'
         '&state=$clientState'
         '&redirect_uri=${widget.redirectUrl}'
-        '&scope=r_liteprofile%20r_emailaddress';
+        '&scope=r_liteprofile%20r_emailaddress%20w_member_social';
 
     // Add a listener to on url changed
     _onUrlChanged = flutterWebViewPlugin.onUrlChanged.listen((String url) {
