@@ -167,8 +167,7 @@ class _LinkedInProfileExamplePageState
     thumbnails.add(prefix0.Thumbnail(
         resolvedUrl: 'https://via.placeholder.com/300x300.png'));
     contentEntites.add(ContentEntity(
-        entityLocation:
-            'https://via.placeholder.com/300x300.png?text=$dateTime',
+        entityLocation: 'https://test-1194.idemo.live',
         thumbnails: thumbnails));
 
     var body = prefix0.LinkedinShareRequest(
