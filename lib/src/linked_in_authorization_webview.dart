@@ -66,8 +66,20 @@ class _LinkedInAuthorizationState extends State<LinkedInAuthorization> {
         '&redirect_uri=${widget.redirectUrl}'
         '&scope=r_liteprofile%20r_emailaddress%20w_member_social';
 
+    flutterWebViewPlugin.onStateChanged.listen((state) async {
+      if (state.type == WebViewState.finishLoad) {
+        flutterWebViewPlugin.evalJavascript(
+            'document.getElementsByClassName(\'nav__base\')[0].className = \'hidden\'');
+      }
+    });
+
     // Add a listener to on url changed
     _onUrlChanged = flutterWebViewPlugin.onUrlChanged.listen((String url) {
+      if (mounted) {
+        flutterWebViewPlugin.evalJavascript(
+            'document.getElementsByClassName(\'nav__base\')[0].className = \'hidden\'');
+      }
+
       if (mounted &&
           (url.startsWith(widget.redirectUrl) ||
               (widget.frontendRedirectUrl != null &&

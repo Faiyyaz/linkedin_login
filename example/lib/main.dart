@@ -26,28 +26,8 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: DefaultTabController(
-        length: 2,
-        child: Scaffold(
-          appBar: AppBar(
-            bottom: TabBar(
-              tabs: [
-                Tab(
-                  icon: Icon(Icons.person),
-                  text: 'Profile',
-                ),
-                Tab(icon: Icon(Icons.text_fields), text: 'Auth code')
-              ],
-            ),
-            title: Text('LinkedIn Authorization'),
-          ),
-          body: TabBarView(
-            children: [
-              LinkedInProfileExamplePage(),
-              LinkedInAuthCodeExamplePage(),
-            ],
-          ),
-        ),
+      home: Scaffold(
+        body: LinkedInProfileExamplePage(),
       ),
     );
   }
