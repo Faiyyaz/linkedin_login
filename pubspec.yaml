@@ -12,9 +12,9 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  flutter_webview_plugin: ^0.3.5
-  http: ^0.12.0
-  uuid: ^2.0.1
+  flutter_webview_plugin: ^0.3.10+1
+  http: ^0.12.0+4
+  uuid: ^2.0.4
 
 dev_dependencies:
   flutter_test:
